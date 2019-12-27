@@ -23,7 +23,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 40)];
     label.text = @"interesting";
     label.font = [UIFont fontWithName:MyEnFontTwo size:24];
