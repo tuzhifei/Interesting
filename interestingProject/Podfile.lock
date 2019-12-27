@@ -1,0 +1,44 @@
+PODS:
+  - FMDB (2.7.5):
+    - FMDB/standard (= 2.7.5)
+  - FMDB/standard (2.7.5)
+  - IQKeyboardManager (6.4.0)
+  - Masonry (1.1.0)
+  - MJExtension (3.1.1)
+  - MJRefresh (3.2.0)
+  - SDWebImage (5.1.0):
+    - SDWebImage/Core (= 5.1.0)
+  - SDWebImage/Core (5.1.0)
+  - SVProgressHUD (2.2.5)
+
+DEPENDENCIES:
+  - FMDB
+  - IQKeyboardManager
+  - Masonry
+  - MJExtension
+  - MJRefresh
+  - SDWebImage
+  - SVProgressHUD
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - FMDB
+    - IQKeyboardManager
+    - Masonry
+    - MJExtension
+    - MJRefresh
+    - SDWebImage
+    - SVProgressHUD
+
+SPEC CHECKSUMS:
+  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  IQKeyboardManager: fcef267266379c003181fc3592f6bdb8bf4db839
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  MJExtension: dfef9855ee178e1ce67f3e03b71ca4226330d87d
+  MJRefresh: ed450d6eb9d3346a2cb033ab7eb6de090aeef437
+  SDWebImage: fb387001955223213dde14bc08c8b73f371f8d8f
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
+
+PODFILE CHECKSUM: 1aef51b14770685d2e5971208d5932cfa8ff4f0a
+
+COCOAPODS: 1.7.0

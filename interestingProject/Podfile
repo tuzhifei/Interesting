@@ -1,0 +1,13 @@
+platform :ios, '10.0'
+inhibit_all_warnings!
+target 'interestingProject' do
+
+pod 'SVProgressHUD'
+pod 'Masonry'
+pod 'FMDB'
+pod 'IQKeyboardManager'
+pod 'MJExtension'
+pod 'MJRefresh'
+pod 'SDWebImage'
+
+end
