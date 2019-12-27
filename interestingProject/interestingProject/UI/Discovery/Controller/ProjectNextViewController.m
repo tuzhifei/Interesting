@@ -193,9 +193,10 @@
     }
     
     VideoListModel *model = _ListArr[indexPath.row];
-    [cell.ImageView sd_setImageWithURL:[NSURL URLWithString:model.ImageView]];
-    cell.titleLabel.text = model.titleLabel;
-    cell.messageLabel.text = [NSString stringWithFormat:@"#%@%@%@",model.category,@" / ",[self timeStrFormTime:model.duration]];
+//    [cell.ImageView sd_setImageWithURL:[NSURL URLWithString:model.ImageView]];
+//    cell.titleLabel.text = model.titleLabel;
+//    cell.messageLabel.text = [NSString stringWithFormat:@"#%@%@%@",model.category,@" / ",[self timeStrFormTime:model.duration]];
+    [cell configWithModel:model];
     return cell;
 }
 

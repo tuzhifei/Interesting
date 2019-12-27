@@ -45,4 +45,13 @@ typedef void(^failBlock) (NSError *error);
                       failBlock:(failBlock)failBlcok
                     isIndicator:(BOOL)isIndicator;
 
+/**
+*  获取作者
+*  @param urlString 链接地址
+*/
++ (void)requestAuthorWithUrl:(NSString *)urlString
+                successBlock:(successBlock)successBlock
+                   failBlock:(failBlock)failBlcok
+                 isIndicator:(BOOL)isIndicator;
+
 @end

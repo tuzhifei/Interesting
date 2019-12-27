@@ -223,7 +223,8 @@
             model.playUrl = [NSString stringWithFormat:@"%@",dataDict[@"playUrl"]];
             NSDictionary *Dic = dataDict[@"consumption"];
             model.consumption = Dic;
-            
+            model.authorIcon = NSStringFromDictionaryForKey(dataDict, @"author.icon");
+            model.authorName = NSStringFromDictionaryForKey(dataDict, @"author.name");
             [_modelArr addObject:model];
         }
         [self.tableView reloadData];
@@ -392,9 +393,10 @@
         cell = [[VideoListTableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"cell"];
     }
     VideoListModel *model = _modelArr[indexPath.row];
-    [cell.ImageView sd_setImageWithURL:[NSURL URLWithString:model.ImageView]];
-    cell.titleLabel.text = model.titleLabel;
-    cell.messageLabel.text = [NSString stringWithFormat:@"#%@%@%@",model.category,@" / ",[self timeStrFormTime:model.duration]];
+//    [cell.ImageView sd_setImageWithURL:[NSURL URLWithString:model.ImageView]];
+//    cell.titleLabel.text = model.titleLabel;
+//    cell.messageLabel.text = [NSString stringWithFormat:@"#%@%@%@",model.category,@" / ",[self timeStrFormTime:model.duration]];
+    [cell configWithModel:model];
     return cell;
 }
 

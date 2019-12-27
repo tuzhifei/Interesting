@@ -37,29 +37,25 @@
     
     [self setNavi];
     [self setTableView];
-    [self getNetData];
     
-    //默认【下拉刷新】
-    self.TableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(getNetData)];
-    //默认【上拉加载】
-    self.TableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMore)];
+    __weak typeof(self)weakSelf = self;
+    [PubliceObject beginReFreshControl:self.TableView
+                              onHeader:^{
+        weakSelf.nextPageUrl = nil;
+        [weakSelf.modelArr removeAllObjects];
+        [weakSelf getNetData];
+    } onFooter:^{
+        [weakSelf getNetData];
+    }];
     
-    [self setupRefresh];
+    [self.TableView.mj_header beginRefreshing];
 }
 
--(void)setupRefresh{
-    
-    MJRefreshNormalHeader *header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-        
-        [self getNetData];
-    }];
-    self.TableView.mj_header = header;
-    
-    MJRefreshAutoNormalFooter *footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
-        
-        [self loadMore];
-    }];
-    self.TableView.mj_footer = footer;
+- (NSMutableArray *)modelArr {
+    if (_modelArr == nil) {
+        _modelArr = [[NSMutableArray alloc]init];
+    }
+    return _modelArr;
 }
 
 -(void)setTableView{
@@ -82,91 +78,34 @@
 }
 
 
--(void)getNetData{
-    
-    //正方形的背景样式(或颜色),黑色背景,白色圆环和文字
-    [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
-    [SMProgressHUD showWithStatus:@"数据加载中..."];
-    self.modelArr = [[NSMutableArray alloc]init];
-    
-    [Networking requestDataByURL:Author Parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        
-        NSArray *itemListArr = [responseObject objectForKey:@"itemList"];
-        
-        self.nextPageUrl = [NSString stringWithFormat:@"%@",responseObject[@"nextPageUrl"]];
-        
+- (void)getNetData{
+    __weak typeof(self)weakSelf = self;
+    [Networking requestAuthorWithUrl:self.nextPageUrl
+                        successBlock:^(NSInteger code, id responseObject) {
+        NSArray *itemListArr = NSArrayFromDictionaryForKey(responseObject, @"itemList");
+        weakSelf.nextPageUrl = NSStringFromDictionaryForKey(responseObject, @"nextPageUrl");
+        if (weakSelf.nextPageUrl.length == 0) {
+            [weakSelf.TableView.mj_footer endRefreshingWithNoMoreData];
+        }
+        NSMutableArray <AuthorModel *> *dataArr = [[NSMutableArray alloc]init];
         for (NSDictionary *dict in itemListArr) {
             NSDictionary *dataDict = dict[@"data"];
-            
             AuthorModel *model = [[AuthorModel alloc]init];
-            model.iconImage = [NSString stringWithFormat:@"%@",dataDict[@"icon"]];
+            model.iconImage = NSStringFromDictionaryForKey(dataDict, @"icon");
             model.authorLabel = [NSString stringWithFormat:@"%@",dataDict[@"title"]];
             model.videoCount = [NSString stringWithFormat:@"%@",dataDict[@"subTitle"]];
             model.desLabel = [NSString stringWithFormat:@"%@",dataDict[@"description"]];
             model.authorId = [NSString stringWithFormat:@"%@",dataDict[@"id"]];
             model.actionUrl = [NSString stringWithFormat:@"%@",dataDict[@"actionUrl"]];
-            [_modelArr addObject:model];
+            [dataArr addObject:model];
         }
-        [self.TableView reloadData];
-        [self endRefresh];
-        [SVProgressHUD dismiss];
-        
-    } failBlock:^(AFHTTPRequestOperation *operation, NSError *error) {
-        
-        [self endRefresh];
-        [SVProgressHUD dismiss];
-    }];
+        [weakSelf.modelArr addObjectsFromArray:dataArr];
+        [weakSelf.TableView reloadData];
+        [PubliceObject endRefreshControl:weakSelf.TableView];
+    } failBlock:^(NSError *error) {
+        [PubliceObject endRefreshControl:weakSelf.TableView];
+    } isIndicator:YES];
 }
-
-- (void)endRefresh{
-    
-   [PubliceObject endRefreshControl:self.TableView];
-}
-
--(void)loadMore{
-    
-    if ([self.nextPageUrl isEqualToString:@"<null>"]) {
-        
-        [self.TableView.mj_footer endRefreshingWithNoMoreData];
-        
-    }else{
-        
-        //正方形的背景样式(或颜色),黑色背景,白色圆环和文字
-        [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
-        [SMProgressHUD showWithStatus:@"数据加载中..."];
-        
-        [Networking requestDataByURL:self.nextPageUrl Parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
-            
-            self.nextPageUrl = nil;
-            NSArray *itemListArr = [responseObject objectForKey:@"itemList"];
-            
-            self.nextPageUrl = [NSString stringWithFormat:@"%@",responseObject[@"nextPageUrl"]];
-            
-            for (NSDictionary *dict in itemListArr) {
-                NSDictionary *dataDict = dict[@"data"];
-                
-                AuthorModel *model = [[AuthorModel alloc]init];
-                model.iconImage = [NSString stringWithFormat:@"%@",dataDict[@"icon"]];
-                model.authorLabel = [NSString stringWithFormat:@"%@",dataDict[@"title"]];
-                model.videoCount = [NSString stringWithFormat:@"%@",dataDict[@"subTitle"]];
-                model.desLabel = [NSString stringWithFormat:@"%@",dataDict[@"description"]];
-                model.authorId = [NSString stringWithFormat:@"%@",dataDict[@"id"]];
-                model.actionUrl = [NSString stringWithFormat:@"%@",dataDict[@"actionUrl"]];
-                [_modelArr addObject:model];
-            }
-            
-            [self.TableView reloadData];
-            [self endRefresh];
-            [SVProgressHUD dismiss];
-            
-        } failBlock:^(AFHTTPRequestOperation *operation, NSError *error) {
-            
-            [self endRefresh];
-            [SVProgressHUD dismiss];
-        }];
-    }
-}
-
 
 #pragma mark -- TableView
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
@@ -190,16 +129,13 @@
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     AuthorModel *model = _modelArr[indexPath.row];
     NSInteger x = model.authorLabel.length;
-    NSInteger y = model.videoCount.length;
-    /*
-    NSMutableAttributedString *str = [[NSMutableAttributedString alloc]initWithString:[NSString stringWithFormat:@"%@   %@",model.authorLabel,model.videoCount]];
-    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:MyChinFont size:14.f] range:NSMakeRange(0, x)];
-    [str addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0, x)];
+//    NSInteger y = model.videoCount.length;
     
-    [str addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12.f] range:NSMakeRange(x+3, y)];
-    [str addAttribute:NSForegroundColorAttributeName value:[UIColor grayColor] range:NSMakeRange(x+3, y)];
-    
-    cell.authorLabel.attributedText = str;*/
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc]initWithString:[NSString stringWithFormat:@"%@",model.authorLabel]];
+    [str setAttributes:@{NSForegroundColorAttributeName:[UIColor blackColor],
+                         NSForegroundColorAttributeName:[UIFont fontWithName:MyChinFont size:14.f]
+    } range:NSMakeRange(0, x)];
+    cell.authorLabel.attributedText = str;
     cell.desLabel.text = model.desLabel;
     [cell.iconImage sd_setImageWithURL:[NSURL URLWithString:model.iconImage]];
     return cell;

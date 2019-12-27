@@ -193,7 +193,8 @@
     }
     
     VideoListModel *model = _ListArr[indexPath.row];
-    [cell.ImageView sd_setImageWithURL:[NSURL URLWithString:model.ImageView]];
+//    [cell.ImageView sd_setImageWithURL:[NSURL URLWithString:model.ImageView]];
+    [cell configWithModel:model];
     return cell;
 }
 

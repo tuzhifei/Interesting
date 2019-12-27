@@ -71,10 +71,12 @@
 // 设置TableView
 -(void)setTableView{
     self.tableView = [[UITableView alloc]initWithFrame:self.view.bounds style:UITableViewStylePlain];
-    self.tableView.rowHeight = ScreenHeight/3;
+    self.tableView.rowHeight = 260 * SCREEN_POINT_375;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    self.tableView.separatorStyle = NO;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    self.tableView.separatorColor = COLOR_Line;
+    self.tableView.separatorInset = UIEdgeInsetsMake(0, 12, 0, 12);
     [self.view addSubview:self.tableView];
 }
 
@@ -101,6 +103,8 @@
                 model.ImageView = NSStringFromDictionaryForKey(contenDict, @"cover.feed");
                 model.duration = NSStringFromDictionaryForKey(contenDict, @"duration");
                 model.category = NSStringFromDictionaryForKey(contenDict, @"category");
+                model.authorIcon = NSStringFromDictionaryForKey(contenDict, @"author.icon");
+                model.authorName = NSStringFromDictionaryForKey(contenDict, @"author.name");
                 [weakSelf.ListArr addObject:model];
             }
             [weakSelf.tableView reloadData];
@@ -109,10 +113,6 @@
     } failBlock:^(NSError *error) {
         [PubliceObject endRefreshControl:weakSelf.tableView];
     } isIndicator:YES];
-}
-
-- (void)endRefresh{
-   [PubliceObject endRefreshControl:self.tableView];
 }
 
 #pragma mark -- TableView
@@ -132,16 +132,14 @@
     if (!cell) {
         cell = [[VideoListTableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"cell"];
     }
-    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     VideoListModel *model = self.ListArr[indexPath.row];
-    [cell.ImageView sd_setImageWithURL:[NSURL URLWithString:model.ImageView]];
-    cell.titleLabel.text = model.titleLabel;
-    cell.messageLabel.text = [NSString stringWithFormat:@"#%@%@%@",model.category,@" / ",[self timeStrFormTime:model.duration]];
+    [cell configWithModel:model];
     return cell;
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     DailyDetailViewController *detail = [[DailyDetailViewController alloc]init];
     detail.model = self.ListArr[indexPath.row];
     detail.modalPresentationStyle = UIModalPresentationFullScreen;

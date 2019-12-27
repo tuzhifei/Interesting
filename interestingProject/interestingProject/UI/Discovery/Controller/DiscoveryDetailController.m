@@ -181,7 +181,8 @@
                 model.playUrl = [NSString stringWithFormat:@"%@",dict[@"playUrl"]];
                 NSDictionary *Dic = dict[@"consumption"];
                 model.consumption = Dic;
-                
+                model.authorIcon = NSStringFromDictionaryForKey(dict, @"author.icon");
+                model.authorName = NSStringFromDictionaryForKey(dict, @"author.name");
                 [_ListArr addObject:model];
             }
             
@@ -208,7 +209,8 @@
                 model.playUrl = [NSString stringWithFormat:@"%@",dataDict[@"playUrl"]];
                 NSDictionary *Dic = dataDict[@"consumption"];
                 model.consumption = Dic;
-                
+                model.authorIcon = NSStringFromDictionaryForKey(dict, @"author.icon");
+                model.authorName = NSStringFromDictionaryForKey(dict, @"author.name");
                 [_ListArr addObject:model];
             }
             
@@ -255,7 +257,8 @@
                     model.playUrl = [NSString stringWithFormat:@"%@",dict[@"playUrl"]];
                     NSDictionary *Dic = dict[@"consumption"];
                     model.consumption = Dic;
-                    
+                    model.authorIcon = NSStringFromDictionaryForKey(dict, @"author.icon");
+                    model.authorName = NSStringFromDictionaryForKey(dict, @"author.name");
                     [_ListArr addObject:model];
                 }
                 
@@ -347,9 +350,7 @@
     }
     
     VideoListModel *model = _ListArr[indexPath.row];
-    [cell.ImageView sd_setImageWithURL:[NSURL URLWithString:model.ImageView]];
-    cell.titleLabel.text = model.titleLabel;
-    cell.messageLabel.text = [NSString stringWithFormat:@"#%@%@%@",model.category,@" / ",[self timeStrFormTime:model.duration]];
+    [cell configWithModel:model];
     return cell;
 }
 

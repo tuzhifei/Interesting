@@ -137,6 +137,25 @@ static NSString *baseUrl = @"https://baobab.kaiyanapp.com";
     } withIndicator:isIndicator];
 }
 
++ (void)requestAuthorWithUrl:(NSString *)urlString
+                successBlock:(successBlock)successBlock
+                   failBlock:(failBlock)failBlcok
+                 isIndicator:(BOOL)isIndicator {
+    if (urlString.length == 0) {
+        urlString = [NSString stringWithFormat:@"%@/api/v3/tabs/pgcs/more?start=0&num=10", baseUrl];
+    }
+    [self netServiceWithUrlString:urlString
+                           params:@{}
+                     successBlock:^(NSInteger code, id responseObject) {
+        if (successBlock) {
+            successBlock(1, responseObject);
+        }
+    } failBlock:^(NSError *error) {
+        if (failBlcok) {
+            failBlcok(error);
+        }
+    } withIndicator:isIndicator];
+}
 
 
 

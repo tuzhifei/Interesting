@@ -35,5 +35,8 @@
 
 @property (nonatomic, copy) NSString *idStr;
 
+@property(nonatomic, strong) NSString *authorIcon;
+@property(nonatomic, strong) NSString *authorName;
+
 
 @end
