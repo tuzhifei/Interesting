@@ -13,7 +13,6 @@
 #import "OneViewController.h"
 #import "TwoViewController.h"
 #import "ThreeViewController.h"
-#import "FourViewController.h"
 #import "MyHelper.h"
 #import "CustomNavigationController.h"
 #import "NewsViewController.h"
@@ -66,9 +65,6 @@
     CustomNavigationController *navithree = [[CustomNavigationController alloc]initWithRootViewController:Three];
     navithree.fullScreenPopGestureEnabled = YES;
     
-//    FourViewController *Four = [[FourViewController alloc]init];
-//    CustomNavigationController *naviFour = [[CustomNavigationController alloc]initWithRootViewController:Four];
-//    naviFour.fullScreenPopGestureEnabled = YES;
     
     self.viewControllers = @[navi, naviNews, navitwo, navithree];
 }

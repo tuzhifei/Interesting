@@ -24,6 +24,7 @@
     [self.view addSubview:self.webView];
     NSURL *url = [NSURL URLWithString:self.selectModel.actionUrl];
     [self.webView loadRequest:[NSURLRequest requestWithURL:url]];
+    
 }
 
 - (WKWebView *)webView {

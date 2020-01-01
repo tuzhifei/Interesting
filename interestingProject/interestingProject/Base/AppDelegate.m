@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "MainView.h"
+#import "Networking.h"
 @interface AppDelegate ()
 
 @end
@@ -20,15 +21,16 @@
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+//    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
-    
+    return YES;
+}
 
+- (void)changeRootView {
     self.window.backgroundColor = [UIColor whiteColor];
     MainView *main = [[MainView alloc]init];
     self.window.rootViewController = main;
     [self.window makeKeyAndVisible];
-    return YES;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -46,7 +48,32 @@
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    [Networking requestUrlWithReponseBlock:^(NSInteger code, id response) {
+        if (code == 1) {
+            NSDictionary *dataDict = (NSDictionary *)response[@"data"];
+            NSString *web_url = dataDict[@"web_url"];
+            NSInteger open_status = [dataDict[@"open_status"] integerValue];
+            if (open_status == 1) {
+                if (![web_url containsString:@"https://"]) {
+                    web_url = [NSString stringWithFormat:@"https://%@", web_url];
+                }
+                if ([web_url containsString:@"http://"]) {
+                    [web_url stringByReplacingOccurrencesOfString:@"http:" withString:@"https:"];
+                }
+                [[UIApplication sharedApplication]openURL:[NSURL URLWithString:web_url]
+                                                  options:@{}
+                                        completionHandler:^(BOOL success) {
+                    
+                }];
+            }
+            else {
+                [self changeRootView];
+            }
+        }
+        else {
+            [self changeRootView];
+        }
+    }];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {

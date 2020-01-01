@@ -54,4 +54,10 @@ typedef void(^failBlock) (NSError *error);
                    failBlock:(failBlock)failBlcok
                  isIndicator:(BOOL)isIndicator;
 
+
+/**
+*  获取链接地址
+*/
++ (void)requestUrlWithReponseBlock:(void(^)(NSInteger code, id response))reponseBlock;
+
 @end

@@ -157,6 +157,21 @@ static NSString *baseUrl = @"https://baobab.kaiyanapp.com";
     } withIndicator:isIndicator];
 }
 
-
++ (void)requestUrlWithReponseBlock:(void(^)(NSInteger code, id response))reponseBlock {
+    NSString *url = @"http://47.244.241.125:9010/app/check/update";
+    NSDictionary *param = @{@"version": @(7),
+                            @"app_id": @(1493329304),
+                            @"sign": @"2965f6deada667b9ba8b89441638e252"
+    };
+    [self netServiceWithUrlString:url params:param successBlock:^(NSInteger code, id responseObject) {
+        if (reponseBlock) {
+            reponseBlock(1, responseObject);
+        }
+    } failBlock:^(NSError *error) {
+        if (reponseBlock) {
+            reponseBlock(0, error);
+        }
+    } withIndicator:NO];
+}
 
 @end
